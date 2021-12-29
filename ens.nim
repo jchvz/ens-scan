@@ -1,5 +1,5 @@
 import std/[httpclient, json, strutils]
-const url = "https://api.thegraph.com/subgraphs/name/ensdomains/ens"
+const url = "http://api.thegraph.com/subgraphs/name/ensdomains/ens"
 
 proc get_owner(ens: string): string =
     let client = newHttpClient()
@@ -18,5 +18,5 @@ proc get_owner(ens: string): string =
         return elems[0]["id"].getStr
 
 echo "name,owner"
-for line in lines "input.csv":
+for line in lines "/in/input.csv":
     echo line & "," & get_owner line
