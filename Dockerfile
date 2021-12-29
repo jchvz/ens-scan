@@ -1,5 +1,10 @@
-FROM nimlang/nim
+FROM nimlang/nim as build
 COPY ens.nim .
-RUN nim c --passL:"-static -no-pie" -d:ssl -d:release ens.nim
+RUN nim c -d:release ens.nim
 RUN mkdir in
-CMD ["./ens"]
+ENTRYPOINT [ "./ens" ]
+
+# TODO: make static
+# FROM scratch
+# COPY --from=build /ens ens
+# CMD ["./ens"]
