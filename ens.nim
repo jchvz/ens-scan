@@ -18,5 +18,5 @@ proc get_owner(ens: string): string =
         return elems[0]["id"].getStr
 
 echo "name,owner"
-for line in lines "input.csv":
+for line in lines "/in/input.csv":
     echo line & "," & get_owner line
