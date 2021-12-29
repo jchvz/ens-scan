@@ -3,3 +3,9 @@ build:
 
 run:
 	nim c -r -d:ssl --verbosity:0 ens.nim
+
+dbuild:
+	docker build -t ens-scan .
+
+drun:
+	docker run -v `pwd`:/in/ ens-scan
