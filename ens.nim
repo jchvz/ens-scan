@@ -1,16 +1,16 @@
-import std/[httpclient, json, strutils]
+import std/[httpclient, json, strutils, os, logging]
 const url = "http://api.thegraph.com/subgraphs/name/ensdomains/ens"
 
 func gql_query(ens: string): string =
     return "query{domains(where:{name:\"" & toLower(ens) & ".eth\"}){id}}"
 
-func owner(elems: seq[JsonNode]): string =
+func owner(elems: seq[JsonNode]): (string, bool) =
     if len(elems) == 0:
-        return "no owner found"
+        return ("looks available!", true)
     else:
-        return elems[0]["id"].getStr
+        return (elems[0]["id"].getStr, false)
 
-proc get_owner(ens: string): string =
+proc get_owner(ens: string): (string, bool) =
     let
         body = %*{"query": gql_query(ens)}
         client = newHttpClient()
@@ -20,6 +20,20 @@ proc get_owner(ens: string): string =
     
     return owner(elems)
 
-echo "name,owner"
+var logger: ConsoleLogger
+if "--avail" in commandLineParams():
+    logger = newConsoleLogger(lvlNotice)
+    logger.log(lvlWarn, "Printing ONLY available ENS names")
+else:
+    logger = newConsoleLogger(lvlInfo)
+    logger.log(lvlWarn, "Printing ALL ENS names")
+
 for line in lines "/in/input.csv":
-    echo line & "," & get_owner line
+    let
+        (owner, avail) = get_owner line
+        msg = "[" & line & "] " & owner
+    
+    if avail:
+        logger.log(lvlNotice, msg)
+    else:
+        logger.log(lvlInfo, msg)
