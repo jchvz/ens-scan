@@ -1,4 +1,4 @@
-import std/[httpclient, json, strutils]
+import std/[httpclient, json, strutils, times]
 const url = "http://api.thegraph.com/subgraphs/name/ensdomains/ens"
 
 func gql_query(ens: string): string =
@@ -20,6 +20,10 @@ proc get_owner(ens: string): string =
     
     return owner(elems)
 
-echo "name,owner"
+var csv = open(now().format("yyyy-MM-dd hh:MM:ss tt") & ".csv", fmWrite)
+
 for line in lines "/in/input.csv":
-    echo line & "," & get_owner line
+    let owner = get_owner line
+    echo "[" & line & "] " & owner
+    if owner == "no owner found":
+        csv.writeLine(line)
