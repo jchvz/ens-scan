@@ -20,9 +20,10 @@ proc get_owner(ens: string): (string, bool) =
     
     return owner(elems)
 
-var csv = open(now().format("yyyy-MM-dd hh:mm:ss tt") & ".csv", fmWrite)
+let csv = open(now().format("yyyy-MM-dd hh:mm:ss tt") & ".csv", fmWrite)
 
 for line in lines "/in/input.csv":
     let (owner, avail) = get_owner line
     echo "[" & line & "] " & owner
-    if avail: csv.writeLine(line)
+    if avail:
+        csv.writeLine(line)
